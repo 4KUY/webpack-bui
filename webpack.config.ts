@@ -3,11 +3,12 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import webpack from 'webpack'
 import MiniCssExtractPlugin from "mini-css-extract-plugin"
 import { buildWebpack } from './config/build/buildWebpack';
-import { BuildPaths, Mode } from './config/build/types/types';
+import { BuildPaths, BuildPlatform, Mode } from './config/build/types/types';
 
 interface EnvVariable {
-  mode:Mode;
-  port: number;
+  mode?:Mode;
+  port?: number;
+  platform?: BuildPlatform;
 }
 
 export default (env: EnvVariable) => {
@@ -19,7 +20,8 @@ export default (env: EnvVariable) => {
   const config: webpack.Configuration = buildWebpack({
     port: env.port ?? 3000,
     mode: env.mode ?? 'development',
-    paths
+    paths,
+    platform: env.platform ?? 'desktop'
   })
     return config
 }
