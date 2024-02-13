@@ -2,6 +2,7 @@
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import { ModuleOptions } from "webpack";
 import { BuildOption } from "./types/types";
+import ReactRefreshTypeScript from "react-refresh-typescript";
 
 export function buildLoaders(option: BuildOption): ModuleOptions["rules"]{
     const isDev = option.mode === 'development'
@@ -28,6 +29,23 @@ export function buildLoaders(option: BuildOption): ModuleOptions["rules"]{
           }
         ],
     }
+    const tsLoader = {
+        test: /\.tsx?$/,
+        use: [{
+          loader: 'ts-loader', 
+          options: {
+            transpileOnly: true,
+            getCustomTransformers: () => ({
+              before: [isDev && ReactRefreshTypeScript()].filter(Boolean),
+            }),//hmr https://github.com/pmmmwh/react-refresh-webpack-plugin/
+          }
+      }],
+        exclude: /node_modules/,
+      }
+    
+
+
+
     return [
       assetLoader,
         {
@@ -37,11 +55,7 @@ export function buildLoaders(option: BuildOption): ModuleOptions["rules"]{
               cssLoaderWithModules
             ],
           },
-          {
-            test: /\.tsx?$/,
-            use: 'ts-loader',
-            exclude: /node_modules/,
-          },
+          tsLoader,
           svgLoader
     ]
 }
